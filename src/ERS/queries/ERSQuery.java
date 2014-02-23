@@ -42,7 +42,7 @@ import sp.izvestaji.evidencijeRadnikaZaJedanDan;
  * @author dobri
  */
 public class ERSQuery {
-    
+
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("JavaLibraryEntitiesPU");
     private static EntityManager em;
 
@@ -57,7 +57,7 @@ public class ERSQuery {
     public static synchronized EntityManager getEm() throws NullPointerException, Exception {
         return em == null ? em = emf.createEntityManager() : em;
     }
-    
+
     public static synchronized List<Kompanija> listaSvihKompanija() {
         try {
             return getEm().createNamedQuery("Kompanija.findAll").getResultList();
@@ -65,7 +65,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized Kompanija kompanijaPoID(int ID) {
         try {
             return (Kompanija) getEm().createNamedQuery("Kompanija.findByIdk")
@@ -83,25 +83,25 @@ public class ERSQuery {
      * }*/
     public static synchronized void novaKompanija(String Naziv, String Vlasnik, String Adresa) {
         Kompanija novaKompanija = new Kompanija();
-        
+
         novaKompanija.setNazivKompanije(Naziv);
         novaKompanija.setVlasnik(Vlasnik);
         novaKompanija.setAdresa(Adresa);
-        
+
         try {
             getEm().persist(novaKompanija);
         } catch (Exception e) {
         }
     }
-    
+
     public static synchronized void updateKompanija(Kompanija Kompanija, String Naziv, String Grad, String Adresa, String Vlasnik)
             throws RollbackException, Exception {
-        
+
         Kompanija.setNazivKompanije(Naziv);
         Kompanija.setGrad(Grad);
         Kompanija.setAdresa(Adresa);
         Kompanija.setVlasnik(Vlasnik);
-        
+
         getEm().getTransaction().begin();
         getEm().merge(Kompanija);
         getEm().getTransaction().commit();
@@ -117,7 +117,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Firma> firmeKompanije(Kompanija k) {
         try {
             return getEm().createNamedQuery("Firma.FirmeKompanije")
@@ -127,7 +127,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Firma> firmeKompanijeIDK(int IDK) {
         try {
             return getEm().createNamedQuery("Firma.FirmeKompanijeID")
@@ -137,7 +137,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized Firma FirmaID(int ID) {
         try {
             return (Firma) getEm().createNamedQuery("Firma.findByIDFirma")
@@ -158,7 +158,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> sviRadnici() {
         try {
             return getEm().createNamedQuery("Radnik.findAll")
@@ -167,7 +167,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> PretragaSvihRadnikaDelimicanNaziv(String Naziv) {
         try {
             return getEm().createNamedQuery("Radnik.DelimicanNaziv")
@@ -177,7 +177,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> PretragaRadnika(
             String radnik, boolean samoRadnici, boolean ostaliOstaliNalozi, boolean samoAktivni, boolean samoNeaktivni) {
         try {
@@ -192,7 +192,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> SviAktivniRadniciFirme(String radnik) {
         try {
             return getEm().createNamedQuery("Radnik.SviAktivniRadnici")
@@ -202,7 +202,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> AktivneFirmeAktivniRadnici(boolean AktivneFirme, boolean AktivniRadnici) {
         try {
             return getEm().createNamedQuery("Radnik.AktivniRadniciAktivneFirme")
@@ -213,7 +213,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Firma> FirmaPoNazivu(String Naziv) {
         try {
             return getEm().createNamedQuery("Firma.findByNaziv")
@@ -223,12 +223,12 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized void novaFirma(Kompanija kompanija, String Naziv, String Grad, String Adresa, String PostanskiBroj, String PIB, String MB, boolean aktivna)
             throws RollbackException, Exception {
-        
+
         Firma novaFirma = new Firma();
-        
+
         novaFirma.setFkIdk(kompanija);
         novaFirma.setNaziv(Naziv);
         novaFirma.setGrad(Grad);
@@ -237,15 +237,15 @@ public class ERSQuery {
         novaFirma.setPib(PIB);
         novaFirma.setMatbr(MB);
         novaFirma.setAktivna(aktivna);
-        
+
         getEm().getTransaction().begin();
         getEm().persist(novaFirma);
         getEm().getTransaction().commit();
     }
-    
+
     public static synchronized void updateFirma(Kompanija kompanija, Firma firma, String Naziv, String Grad, String Adresa, String PostanskiBroj, String PIB, String MB, boolean aktivna)
             throws RollbackException, Exception {
-        
+
         firma.setFkIdk(kompanija);
         firma.setNaziv(Naziv);
         firma.setGrad(Grad);
@@ -254,7 +254,7 @@ public class ERSQuery {
         firma.setPib(PIB);
         firma.setMatbr(MB);
         firma.setAktivna(aktivna);
-        
+
         getEm().getTransaction().begin();
         getEm().merge(firma);
         getEm().getTransaction().commit();
@@ -270,7 +270,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Orgjed> orgJedFirme(Firma Firma) {
         try {
             return getEm().createNamedQuery("Orgjed.orgJedFirme")
@@ -280,7 +280,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Orgjed> orgJedFirmePoIDFirme(int FirmaID) {
         try {
             return getEm().createNamedQuery("Orgjed.orgJedFirmeID")
@@ -303,7 +303,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized Orgjed ORGJED_ID(int IDOrgjed) {
         try {
             return (Orgjed) getEm().createNamedQuery("Orgjed.findByIDOrgjed")
@@ -313,30 +313,30 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized void novaOrgJed(Firma firma, String Naziv, String Sifra, boolean mehanika)
             throws RollbackException, Exception {
-        
+
         Orgjed novaOrgJed = new Orgjed();
-        
+
         novaOrgJed.setFKIDFirma(firma);
         novaOrgJed.setSifra(Sifra);
         novaOrgJed.setNaziv(Naziv);
         novaOrgJed.setMehanika(mehanika);
-        
+
         getEm().getTransaction().begin();
         getEm().persist(novaOrgJed);
         getEm().getTransaction().commit();
     }
-    
+
     public static synchronized void updateOrgJed(Orgjed orgjed, Firma firma, String Naziv, String Sifra, boolean mehanika)
             throws RollbackException, Exception {
-        
+
         orgjed.setFKIDFirma(firma);
         orgjed.setSifra(Sifra);
         orgjed.setNaziv(Naziv);
         orgjed.setMehanika(mehanika);
-        
+
         getEm().getTransaction().begin();
         getEm().merge(orgjed);
         getEm().getTransaction().commit();
@@ -354,7 +354,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized Radnik radnikSifraINFSISTEM(String SifraINFSISTEM) {
         try {
             return (Radnik) getEm().createNamedQuery("Radnik.findBySifraINFSISTEM")
@@ -364,7 +364,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized String radnikSifraINFSISTEM(long ID) {
         try {
             return (String) getEm().createNamedQuery("Radnik.SifraINFSISTEM_za_ID")
@@ -374,7 +374,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radnikPoImenuIliPrezimenu(String ImeIliPrezime) {
         try {
             return getEm().createNamedQuery("Radnik.findByImeIliPrezime")
@@ -384,7 +384,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciKompanije(int idk) {
         try {
             return getEm().createNamedQuery("Radnik.RadniciKompanije")
@@ -394,7 +394,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciFirme(int iDFirma) {
         try {
             return getEm().createNamedQuery("Radnik.RadniciFirme")
@@ -404,7 +404,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> aktivniRadniciOrgJed(Orgjed orgjed) {
         try {
             return getEm().createNamedQuery("Radnik.AktivniRadniciOrgjed")
@@ -414,7 +414,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> aktivniRadniciFirme(Firma firma) {
         try {
             return getEm().createNamedQuery("Radnik.AktivniRadniciFirme")
@@ -424,7 +424,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciOrgJed(Orgjed orgjed) {
         try {
             return getEm().createNamedQuery("Radnik.RadniciOrgJed")
@@ -434,7 +434,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciOrgJedPoIDOrgJed(int IDOrgJed) {
         try {
             return getEm().createNamedQuery("Radnik.RadniciOrgJedPoIDOrgJed")
@@ -444,7 +444,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> aktivniRadniciOrgJedPoID(int IDOrgJed, boolean Aktivan) {
         try {
             return getEm().createNamedQuery("Radnik.AktivniRadniciOrgJedPoID")
@@ -455,7 +455,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> aktivniRadniciOrgJed(Orgjed OrgJed, boolean Aktivan) {
         try {
             return getEm().createNamedQuery("Radnik.AktivniRadniciOrgJed")
@@ -466,7 +466,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciZaDatum(String datum) {
         try {
             return getEm().createNamedQuery("Raddan.RadniciZaDatum")
@@ -476,7 +476,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciKompanijeZaDatum(Kompanija kompanija, String datum) {
         try {
             return getEm().createNamedQuery("Radnik.radniciKompanijeZaDatum")
@@ -487,7 +487,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciFirmeZaDatum(Firma firma, String datum) {
         try {
             return getEm().createNamedQuery("Radnik.RadniciFirmeZaDatum")
@@ -498,7 +498,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Radnik> radniciOrgJedZaDatum(Orgjed orgjed, String datum) {
         try {
             return getEm().createNamedQuery("Radnik.RadniciOrgJedZaDatum")
@@ -509,12 +509,12 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized void noviRadnik(Orgjed orgjed, TipRadnika tipRadnika, String Ime, String Prezime, double Koeficijent, boolean aktivan, String grupa, String sifra_infsistem)
             throws RollbackException, Exception {
-        
+
         Radnik noviRadnik = new Radnik();
-        
+
         noviRadnik.setFKIDOrgjed(orgjed);
         noviRadnik.setFKIDVrsta(tipRadnika);
         noviRadnik.setIme(Ime);
@@ -525,15 +525,15 @@ public class ERSQuery {
         noviRadnik.setGrupa(grupa);
         noviRadnik.setSifraradnikaOLD(-1);
         noviRadnik.setSifraINFSISTEM(sifra_infsistem);
-        
+
         getEm().getTransaction().begin();
         getEm().persist(noviRadnik);
         getEm().getTransaction().commit();
     }
-    
+
     public static synchronized void updateRadnik(Radnik radnik, Orgjed orgjed, TipRadnika tipRadnika, String Ime, String Prezime, double Koeficijent, boolean aktivan, String grupa, String sifra_infsistem)
             throws RollbackException, Exception {
-        
+
         radnik.setFKIDOrgjed(orgjed);
         radnik.setFKIDVrsta(tipRadnika);
         radnik.setIme(Ime);
@@ -544,12 +544,12 @@ public class ERSQuery {
         radnik.setGrupa(grupa);
         radnik.setSifraradnikaOLD(-1);
         radnik.setSifraINFSISTEM(sifra_infsistem);
-        
+
         getEm().getTransaction().begin();
         getEm().persist(radnik);
         getEm().getTransaction().commit();
     }
-    
+
     public static synchronized void evidentirajAktivnostRadnika(Radnik radnik, String Datum, Statusi status, String Nalog) {
         try {
             if (!getEm().getTransaction().isActive()) {
@@ -575,7 +575,7 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized void evidentirajAktivnostRadnika3(Radnik radnik, Date Datum, Statusi status, String Nalog) {
         try {
             if (!em.getTransaction().isActive()) {
@@ -598,24 +598,24 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized void evidentirajAktivnostRadnika4(Radnik radnik, Statusi status, String Nalog) throws Exception {
         try {
             if (!getEm().getTransaction().isActive()) {
                 getEm().getTransaction().begin();
             }
-            
+
             Connection c = getEm().unwrap(java.sql.Connection.class);
             CallableStatement cs = c.prepareCall("{call [dbo].[UPIS_RADNIK_STATUS_NALOG](?1,?2,?3,?4)}");
             cs.setQueryTimeout(1);
-            
+
             cs.setLong(1, radnik.getIDRadnik());
             cs.setDate(2, null);
             cs.setInt(3, status.getIDStatus());
             cs.setString(4, Nalog);
-            
+
             cs.execute();
-            
+
             em.getTransaction().commit();
         } catch (SQLTimeoutException e1) {
             em.getTransaction().rollback();
@@ -629,7 +629,7 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized void evidentirajAktivnostRadnika2(long IDRadnika, String Datum, int IDStatus, String Nalog) {
         // moramo definisati evidenciju kroz ERSQuery zato što SP na SQL Serveru
         // iako radi odlično, posle upisa ne ažurira Krajnje vreme i Trajanje kolone
@@ -641,7 +641,7 @@ public class ERSQuery {
             if (!em.getTransaction().isActive()) {
                 em.getTransaction().begin();
             }
-            
+
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
@@ -660,7 +660,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized TipRadnika tipRadnika(int IDTipRadnika) {
         try {
             return (TipRadnika) getEm().createNamedQuery("TipRadnika.findByIDTip")
@@ -670,11 +670,11 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized void noviTipRadnika(String Naziv) {
         TipRadnika tr = new TipRadnika();
         tr.setNaziv(Naziv);
-        
+
         try {
             getEm().persist(tr);
         } catch (Exception e) {
@@ -708,7 +708,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Raddan> evidencijeRadnikaZaDatum6(Radnik radnik, String datum) {
         try {
             return getEm().createNamedQuery("Raddan.EvidencijaRadnikaZaDatum")
@@ -719,7 +719,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Raddan> evidencijeRadnikaZaOpsegDatuma(Radnik radnik, String DatumOd, String DatumDo) {
         try {
             return getEm().createNamedQuery("Raddan.IDRadnikOpsegDatuma")
@@ -731,7 +731,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Raddan> evidencijaSvihRadnikaOrgJedZaDatum(Orgjed orgjed, String Datum) {
         try {
             return getEm().createNamedQuery("Raddan.EvidencijaSvihRadnikaOrgJedZaDatum")
@@ -742,7 +742,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized List<Raddan> evidencijaSvihRadnikaFirmeZaDatum(Firma firma, String Datum) {
         try {
             return getEm().createNamedQuery("Raddan.EvidencijaSvihRadnikaFirmeZaDatum")
@@ -765,7 +765,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized Statusi statusPoOznaci(String status) {
         try {
             return (Statusi) getEm().createNamedQuery("Statusi.findByStatus")
@@ -775,7 +775,7 @@ public class ERSQuery {
             return null;
         }
     }
-    
+
     public static synchronized Statusi statusPoID(int idstatus) {
         try {
             return (Statusi) getEm().createNamedQuery("Statusi.findByIDStatus")
@@ -792,23 +792,23 @@ public class ERSQuery {
     public static synchronized List<SVI_RADNICI_SUMA_SATA_ZA_PERIOD> Izvestaj_SVI_RADNICI_SUMA_SATA_ZA_PERIOD(String datumOD, String datumDO) {
         SVI_RADNICI_SUMA_SATA_ZA_PERIOD srss;
         List<SVI_RADNICI_SUMA_SATA_ZA_PERIOD> lista = new ArrayList<>();
-        
+
         try {
             if (!getEm().getTransaction().isActive()) {
                 getEm().getTransaction().begin();
             }
-            
+
             Connection c = getEm().unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [dbo].[UK_MESECNI_SATI_ZA_SVE_STATUSE_ORGJED_PO_SIFRAMA](?1,?2)} ");
             cs.setString(1, datumOD);
             cs.setString(2, datumDO);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 srss = new SVI_RADNICI_SUMA_SATA_ZA_PERIOD();
-                
+
                 srss.setIdk(rs.getInt(1));
                 srss.setIdfirma(rs.getInt(2));
                 srss.setIdorgjed(rs.getInt(3));
@@ -816,11 +816,11 @@ public class ERSQuery {
                 srss.setFk_idstatus(rs.getInt(5));
                 srss.setSifrastatusa(rs.getString(6));
                 srss.setSati(rs.getFloat(7));
-                
+
                 lista.add(srss);
                 srss = null;
             }
-            
+
             getEm().getTransaction().commit();
             return lista;
         } catch (SQLException e1) {
@@ -840,27 +840,27 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized List<evidencijeRadnikaZaJedanDan> Izvestaj_evidencijeRadnikaZaJedanDan(long idradnik, String datum) {
         sp.izvestaji.evidencijeRadnikaZaJedanDan erz;
         List<evidencijeRadnikaZaJedanDan> lista = new ArrayList<>();
-        
+
         try {
             if (!getEm().getTransaction().isActive()) {
                 getEm().getTransaction().begin();
             }
-            
+
             Connection c = getEm().unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [dbo].[evidencijeRadnikaZaJedanDan](?1,?2)} ");
             cs.setLong(1, idradnik);
             cs.setString(2, datum);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 erz = new evidencijeRadnikaZaJedanDan();
-                
+
                 erz.setFk_idradnik(rs.getInt(1));
                 erz.setRbrstanja(rs.getInt(2));
                 erz.setDatum(rs.getString(3));
@@ -870,11 +870,11 @@ public class ERSQuery {
                 erz.setPoc_stanja(rs.getString(7));
                 erz.setKraj_stanja(rs.getString(8));
                 erz.setTrajanje(rs.getFloat(9));
-                
+
                 lista.add(erz);
                 erz = null;
             }
-            
+
             getEm().getTransaction().commit();
             return lista;
         } catch (SQLException e1) {
@@ -894,27 +894,27 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized List<SVI_RADNICI_UK_MESECNI_SATI_ZA_SVE_STATUSE> Izvestaj_SVI_RADNICI_UK_MESECNI_SATI_ZA_SVE_STATUSE(String datumOd, String datumDo) {
         sp.izvestaji.SVI_RADNICI_UK_MESECNI_SATI_ZA_SVE_STATUSE sr_uk;
         List<SVI_RADNICI_UK_MESECNI_SATI_ZA_SVE_STATUSE> lista = new ArrayList<>();
-        
+
         try {
             if (!getEm().getTransaction().isActive()) {
                 getEm().getTransaction().begin();
             }
-            
+
             Connection c = em.unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [dbo].[UK_MESECNI_SATI_ZA_SVE_STATUSE_ORGJED](?1,?2)}");
             cs.setString(1, datumOd);
             cs.setString(2, datumDo);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 sr_uk = new SVI_RADNICI_UK_MESECNI_SATI_ZA_SVE_STATUSE();
-                
+
                 sr_uk.setIdradnik(rs.getLong(1));
                 sr_uk.setIme(rs.getString(2));
                 sr_uk.setPrezime(rs.getString(3));
@@ -922,11 +922,11 @@ public class ERSQuery {
                 sr_uk.setZnacenje(rs.getString(5));
                 sr_uk.setMesec(rs.getInt(6));
                 sr_uk.setSati(rs.getFloat(7));
-                
+
                 lista.add(sr_uk);
                 sr_uk = null;
             }
-            
+
             getEm().getTransaction().commit();
             return lista;
         } catch (SQLException e1) {
@@ -949,28 +949,28 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized List<UCINAK_RADNIKA_ZA_PERIOD> Izvestaj_UCINAK_RADNIKA_ZA_PERIOD(long idradnik, String datumOd, String datumDo) {
         sp.izvestaji.UCINAK_RADNIKA_ZA_PERIOD sr_uk;
         List<UCINAK_RADNIKA_ZA_PERIOD> lista = new ArrayList<>();
-        
+
         try {
             if (!getEm().getTransaction().isActive()) {
                 getEm().getTransaction().begin();
             }
-            
+
             Connection c = em.unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [dbo].[UCINAK_RADNIKA_ZA_PERIOD](?1, ?2, ?3)}");
             cs.setLong(1, idradnik);
             cs.setString(2, datumOd);
             cs.setString(3, datumDo);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 sr_uk = new UCINAK_RADNIKA_ZA_PERIOD();
-                
+
                 sr_uk.setIdk(rs.getInt(1));
                 sr_uk.setKompanija(rs.getString(2));
                 sr_uk.setIdfirma(rs.getInt(3));
@@ -982,11 +982,11 @@ public class ERSQuery {
                 sr_uk.setZnacenje(rs.getString(9));
                 sr_uk.setUksati(rs.getFloat(10));
                 sr_uk.setIskoriscenost(rs.getFloat(11));
-                
+
                 lista.add(sr_uk);
                 sr_uk = null;
             }
-            
+
             getEm().getTransaction().commit();
             return lista;
         } catch (SQLException e1) {
@@ -1017,31 +1017,31 @@ public class ERSQuery {
     public static synchronized List<Servis_Ukupan_Broj_Faktura_Za_Period> Izvestaj_Servis_Ukupan_Broj_Faktura_Za_Period(String DatumOD, String DatumDO) {
         Servis_Ukupan_Broj_Faktura_Za_Period sr_uk;
         List<Servis_Ukupan_Broj_Faktura_Za_Period> lista = new ArrayList<>();
-        
+
         try {
             if (!em.getTransaction().isActive()) {
                 em.getTransaction().begin();
             }
-            
+
             Connection c = em.unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [ERS].[dbo].[FULL_KD_Servis_Ukupan_Broj_Faktura_Za_Period] (?1, ?2)} ");
             cs.setString(1, DatumOD);
             cs.setString(2, DatumDO);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 sr_uk = new Servis_Ukupan_Broj_Faktura_Za_Period(rs.getInt(2), rs.getString(1));
                 lista.add(sr_uk);
-                
+
                 sr_uk = null;
             }
-            
+
             em.getTransaction().commit();
-            
+
             return lista;
-            
+
         } catch (SQLException e1) {
             em.getTransaction().rollback();
             return null;
@@ -1056,35 +1056,35 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized List<Servis_Fakturisani_Nalozi_Po_PC> Izvestaj_Servis_Fakturisani_Nalozi_Po_PC(String DatumOD, String DatumDO) {
         Servis_Fakturisani_Nalozi_Po_PC sr_uk;
         List<Servis_Fakturisani_Nalozi_Po_PC> lista = new ArrayList<>();
-        
+
         try {
             if (!em.getTransaction().isActive()) {
                 em.getTransaction().begin();
             }
-            
+
             Connection c = em.unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [ERS].[dbo].[FULL_KD_Servis_Fakturisani_Nalozi_Po_PC] (?1, ?2)} ");
             cs.setString(1, DatumOD);
             cs.setString(2, DatumDO);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 sr_uk = new Servis_Fakturisani_Nalozi_Po_PC(rs.getString(1), rs.getFloat(2));
                 lista.add(sr_uk);
-                
+
                 sr_uk = null;
             }
-            
+
             em.getTransaction().commit();
-            
+
             return lista;
-            
+
         } catch (SQLException e1) {
             em.getTransaction().rollback();
             return null;
@@ -1099,24 +1099,24 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized List<Servis_Fakturisani_Nalozi_Po_PC_Detaljno> Izvestaj_Servis_Fakturisani_Nalozi_Po_PC_Detaljno(String DatumOD, String DatumDO) {
         Servis_Fakturisani_Nalozi_Po_PC_Detaljno sr_uk;
         List<Servis_Fakturisani_Nalozi_Po_PC_Detaljno> lista = new ArrayList<>();
-        
+
         try {
             if (!em.getTransaction().isActive()) {
                 em.getTransaction().begin();
             }
-            
+
             Connection c = em.unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [ERS].[dbo].[FULL_KD_Servis_Fakturisani_Nalozi_Po_PC_Detaljno] (?1, ?2)} ");
             cs.setString(1, DatumOD);
             cs.setString(2, DatumDO);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 sr_uk = new Servis_Fakturisani_Nalozi_Po_PC_Detaljno(
                         rs.getString(1),
@@ -1126,16 +1126,16 @@ public class ERSQuery {
                         rs.getFloat(5),
                         rs.getFloat(6),
                         rs.getFloat(7));
-                
+
                 lista.add(sr_uk);
-                
+
                 sr_uk = null;
             }
-            
+
             em.getTransaction().commit();
-            
+
             return lista;
-            
+
         } catch (SQLException e1) {
             em.getTransaction().rollback();
             return null;
@@ -1150,40 +1150,40 @@ public class ERSQuery {
             }
         }
     }
-    
+
     public static synchronized List<Servis_Poslovanje_Mesecno> Izvestaj_Servis_Uporedjenje_Poslovanja(String DatumOD, String DatumDO) {
         Servis_Poslovanje_Mesecno sp;
         List<Servis_Poslovanje_Mesecno> lista = new ArrayList<>();
-        
+
         try {
             if (!em.getTransaction().isActive()) {
                 em.getTransaction().begin();
             }
-            
+
             Connection c = em.unwrap(java.sql.Connection.class);
-            
+
             CallableStatement cs = c.prepareCall("{call [ERS].[dbo].[Servis_Poslovanje_Mesecno] (?1, ?2)} ");
             cs.setString(1, DatumOD);
             cs.setString(2, DatumDO);
-            
+
             ResultSet rs = cs.executeQuery();
-            
+
             while (rs.next()) {
                 sp = new Servis_Poslovanje_Mesecno(
                         rs.getString(1),
                         rs.getInt(2),
                         rs.getInt(3),
                         rs.getDouble(4));
-                
+
                 lista.add(sp);
-                
+
                 sp = null;
             }
-            
+
             em.getTransaction().commit();
-            
+
             return lista;
-            
+
         } catch (SQLException e1) {
             em.getTransaction().rollback();
             return null;
@@ -1202,41 +1202,49 @@ public class ERSQuery {
 
     public static synchronized void insertNoveFakturisaneUslugeExcel(List<FUExcelBean> FUExcelBeans) throws Exception {
         TempFaktSati tf;
-        
-        getEm().getTransaction().begin();
-        
-        for (FUExcelBean fu : FUExcelBeans) {
-            tf = new TempFaktSati();
-            
-            tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
-            tf.setSati(fu.getSati());
-            tf.setNalog(fu.getRadniNalog());
-            tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
-            tf.setPCentar(null);
-            
-            getEm().persist(tf);
+
+        if (!getEm().getTransaction().isActive()) {
+            getEm().getTransaction().begin();
+
+            for (FUExcelBean fu : FUExcelBeans) {
+                tf = new TempFaktSati();
+
+                tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
+                tf.setSati(fu.getSati());
+                tf.setNalog(fu.getRadniNalog());
+                tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+                tf.setPCentar(null);
+
+                getEm().persist(tf);
+            }
+
+            getEm().getTransaction().commit();
         }
-        
-        getEm().getTransaction().commit();
+
+        getEm().close();
     }
-    
+
     public static synchronized void insertNoveFakturisaneUslugeCSV(List<FUCSVBean> FUCSVBeans) throws Exception {
         TempFaktSati tf;
-        
-        getEm().getTransaction().begin();
-        
-        for (FUCSVBean fu : FUCSVBeans) {
-            tf = new TempFaktSati();
-            
-            tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
-            tf.setSati(Double.parseDouble(fu.getSati()));
-            tf.setNalog(fu.getRadniNalog());
-            tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
-            tf.setPCentar(null);
-            
-            getEm().persist(tf);
+
+        if (!getEm().getTransaction().isActive()) {
+            getEm().getTransaction().begin();
+
+            for (FUCSVBean fu : FUCSVBeans) {
+                tf = new TempFaktSati();
+
+                tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
+                tf.setSati(Double.parseDouble(fu.getSati()));
+                tf.setNalog(fu.getRadniNalog());
+                tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+                tf.setPCentar(null);
+
+                getEm().persist(tf);
+            }
+
+            getEm().getTransaction().commit();
         }
-        
-        getEm().getTransaction().commit();
+
+        getEm().close();
     }
 }

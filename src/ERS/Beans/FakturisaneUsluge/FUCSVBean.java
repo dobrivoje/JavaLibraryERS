@@ -5,9 +5,14 @@
  */
 package ERS.Beans.FakturisaneUsluge;
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -28,6 +33,7 @@ public class FUCSVBean implements ICVSAble {
         return new ArrayList<>(Arrays.asList(kolone));
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Konstruktori, getters/setters">
     public FUCSVBean() {
     }
 
@@ -51,6 +57,11 @@ public class FUCSVBean implements ICVSAble {
         return Sati;
     }
 
+    public double getSatiN() throws ParseException {
+        NumberFormat nf = NumberFormat.getInstance(Locale.GERMANY);
+        return nf.parse(Sati).doubleValue();
+    }
+
     public void setSati(String Sati) {
         this.Sati = Sati;
     }
@@ -67,6 +78,12 @@ public class FUCSVBean implements ICVSAble {
         return DatumRacuna;
     }
 
+    public String getDatumRacunaN() throws ParseException {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(df.parse(DatumRacuna));
+    }
+
     public void setDatumRacuna(String DatumRacuna) {
         this.DatumRacuna = DatumRacuna;
     }
@@ -78,6 +95,7 @@ public class FUCSVBean implements ICVSAble {
     public void setProfitniCentar(String ProfitniCentar) {
         this.ProfitniCentar = ProfitniCentar;
     }
+//</editor-fold>
 
     @Override
     public String toString() {
