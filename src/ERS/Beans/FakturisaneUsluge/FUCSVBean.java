@@ -95,7 +95,7 @@ public class FUCSVBean implements ICVSAble {
     public void setProfitniCentar(String ProfitniCentar) {
         this.ProfitniCentar = ProfitniCentar;
     }
-//</editor-fold>
+    //</editor-fold>
 
     @Override
     public String toString() {
@@ -105,5 +105,4 @@ public class FUCSVBean implements ICVSAble {
                 + "[" + DatumRacuna + "]"
                 + "[" + ProfitniCentar + "]";
     }
-
 }

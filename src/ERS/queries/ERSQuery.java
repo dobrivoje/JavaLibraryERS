@@ -44,7 +44,7 @@ import sp.izvestaji.evidencijeRadnikaZaJedanDan;
 public class ERSQuery {
 
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("JavaLibraryEntitiesPU");
-    private static EntityManager em;
+    private static final EntityManager em = emf.createEntityManager();
 
     /**
      *
@@ -55,7 +55,8 @@ public class ERSQuery {
      * @throws java.lang.Exception
      */
     public static synchronized EntityManager getEm() throws NullPointerException, Exception {
-        return em == null ? em = emf.createEntityManager() : em;
+        // return em == null ? em = emf.createEntityManager() : em;
+        return em;
     }
 
     public static synchronized List<Kompanija> listaSvihKompanija() {
@@ -1200,27 +1201,51 @@ public class ERSQuery {
     }
     //</editor-fold>
 
+    public static synchronized List<TempFaktSati> tempFaktSati() throws Exception {
+        return getEm().createNamedQuery("TempFaktSati.findAll")
+                .getResultList();
+    }
+
+    public static synchronized void insertTempFU(FUExcelBean fu) throws Exception {
+        TempFaktSati tf;
+
+        if (!getEm().getTransaction().isActive()) {
+            getEm().getTransaction().begin();
+        }
+
+        tf = new TempFaktSati();
+
+        tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
+        tf.setSati(fu.getSati());
+        tf.setNalog(fu.getRadniNalog());
+        tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+        tf.setPCentar(null);
+
+        getEm().persist(tf);
+        getEm().getTransaction().commit();
+        getEm().close();
+    }
+
     public static synchronized void insertNoveFakturisaneUslugeExcel(List<FUExcelBean> FUExcelBeans) throws Exception {
         TempFaktSati tf;
 
         if (!getEm().getTransaction().isActive()) {
             getEm().getTransaction().begin();
-
-            for (FUExcelBean fu : FUExcelBeans) {
-                tf = new TempFaktSati();
-
-                tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
-                tf.setSati(fu.getSati());
-                tf.setNalog(fu.getRadniNalog());
-                tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
-                tf.setPCentar(null);
-
-                getEm().persist(tf);
-            }
-
-            getEm().getTransaction().commit();
         }
 
+        for (FUExcelBean fu : FUExcelBeans) {
+            tf = new TempFaktSati();
+
+            tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
+            tf.setSati(fu.getSati());
+            tf.setNalog(fu.getRadniNalog());
+            tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+            tf.setPCentar(null);
+
+            getEm().persist(tf);
+        }
+
+        getEm().getTransaction().commit();
         getEm().close();
     }
 
