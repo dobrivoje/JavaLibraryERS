@@ -24,6 +24,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "FaktSati")
 @XmlRootElement
 @NamedQueries({
+    // JavaFX - Upiti !!!
+    @NamedQuery(name = "FaktSati.UKDnevnaFakturisanost3",
+            query = "SELECT SUM(f.sati) FROM FaktSati f "
+            + "WHERE FUNCTION('YEAR', f.datum) = :Godina "
+            + "AND FUNCTION('MONTH', f.datum) = :Mesec "
+            + "AND FUNCTION('DAY', f.datum) = :Dan   "
+            + "GROUP BY f.datum"),
+
+    @NamedQuery(name = "FaktSati.UKSati",
+            query = "SELECT SUM(f.sati) FROM FaktSati f "
+            + "WHERE FUNCTION('YEAR', f.datum) = :Godina "
+            + "AND FUNCTION('MONTH', f.datum) = :Mesec "
+            + "GROUP BY FUNCTION('MONTH', f.datum)"),
+
     @NamedQuery(name = "FaktSati.findByNalog", query = "SELECT f FROM FaktSati f WHERE f.nalog = :nalog"),
     @NamedQuery(name = "FaktSati.findByDatum", query = "SELECT f FROM FaktSati f WHERE f.datum = :datum"),
     @NamedQuery(name = "FaktSati.zaRadnikaZaDatum", query = "SELECT f FROM FaktSati f WHERE f.fKIDRadnik = :Radnik AND f.datum = :Datum"),

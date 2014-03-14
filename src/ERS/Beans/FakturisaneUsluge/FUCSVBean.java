@@ -58,7 +58,7 @@ public class FUCSVBean implements ICVSAble {
     }
 
     public double getSatiN() throws ParseException {
-        NumberFormat nf = NumberFormat.getInstance(Locale.GERMANY);
+        NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
         return nf.parse(Sati).doubleValue();
     }
 
@@ -79,7 +79,7 @@ public class FUCSVBean implements ICVSAble {
     }
 
     public String getDatumRacunaN() throws ParseException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMANY);
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(df.parse(DatumRacuna));
     }

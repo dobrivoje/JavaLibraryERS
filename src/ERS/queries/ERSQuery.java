@@ -23,7 +23,10 @@ import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -46,6 +49,8 @@ public class ERSQuery {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("JavaLibraryEntitiesPU");
     private static final EntityManager em = emf.createEntityManager();
 
+    private static final Calendar calendar = Calendar.getInstance();
+
     /**
      *
      * EntityManager - getEm() : pošto vraća exception, može se iskoristiti za
@@ -53,12 +58,17 @@ public class ERSQuery {
      *
      * @return
      * @throws java.lang.Exception
+     * @throws java.net.UnknownHostException
+     * @throws java.sql.SQLException
      */
-    public static synchronized EntityManager getEm() throws NullPointerException, Exception {
-        // return em == null ? em = emf.createEntityManager() : em;
+    public static synchronized EntityManager getEm()
+            throws NullPointerException, Exception,
+            java.net.UnknownHostException, java.sql.SQLException {
+
         return em;
     }
 
+    //<editor-fold defaultstate="collapsed" desc="KOMPANIJA">
     public static synchronized List<Kompanija> listaSvihKompanija() {
         try {
             return getEm().createNamedQuery("Kompanija.findAll").getResultList();
@@ -107,10 +117,9 @@ public class ERSQuery {
         getEm().merge(Kompanija);
         getEm().getTransaction().commit();
     }
+    //</editor-fold>
 
-    ///////////////////////
-    ///// firma ///////////
-    ///////////////////////
+    //<editor-fold defaultstate="collapsed" desc="FIRMA">
     public static synchronized List<Firma> listaSvihFirmi() {
         try {
             return getEm().createNamedQuery("Firma.findAll").getResultList();
@@ -154,61 +163,6 @@ public class ERSQuery {
         try {
             return getEm().createNamedQuery("Firma.AktivneFirme")
                     .setParameter("Aktivna", Aktivna)
-                    .getResultList();
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static synchronized List<Radnik> sviRadnici() {
-        try {
-            return getEm().createNamedQuery("Radnik.findAll")
-                    .getResultList();
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static synchronized List<Radnik> PretragaSvihRadnikaDelimicanNaziv(String Naziv) {
-        try {
-            return getEm().createNamedQuery("Radnik.DelimicanNaziv")
-                    .setParameter("Naziv", "%" + Naziv + "%")
-                    .getResultList();
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static synchronized List<Radnik> PretragaRadnika(
-            String radnik, boolean samoRadnici, boolean ostaliOstaliNalozi, boolean samoAktivni, boolean samoNeaktivni) {
-        try {
-            return getEm().createNamedQuery("Radnik.PretragaRadnika")
-                    .setParameter("Naziv", "%" + radnik + "%")
-                    .setParameter("SamoAktivni", samoAktivni)
-                    .setParameter("Neaktivni", samoNeaktivni)
-                    .setParameter("SamoRadnici", samoRadnici)
-                    .setParameter("SamoOstaliNalozi", ostaliOstaliNalozi)
-                    .getResultList();
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static synchronized List<Radnik> SviAktivniRadniciFirme(String radnik) {
-        try {
-            return getEm().createNamedQuery("Radnik.SviAktivniRadnici")
-                    .setParameter("Naziv", "%" + radnik + "%")
-                    .getResultList();
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static synchronized List<Radnik> AktivneFirmeAktivniRadnici(boolean AktivneFirme, boolean AktivniRadnici) {
-        try {
-            return getEm().createNamedQuery("Radnik.AktivniRadniciAktivneFirme")
-                    .setParameter("AktivneFirme", AktivneFirme)
-                    .setParameter("AktivniRadnici", AktivniRadnici)
                     .getResultList();
         } catch (Exception ex) {
             return null;
@@ -260,10 +214,9 @@ public class ERSQuery {
         getEm().merge(firma);
         getEm().getTransaction().commit();
     }
+    //</editor-fold>
 
-    ///////////////////////
-    ///// orgjed //////////
-    ///////////////////////
+    //<editor-fold defaultstate="collapsed" desc="ORG. JED.">
     public static synchronized List<Orgjed> listaSvihORGJED() {
         try {
             return getEm().createNamedQuery("Orgjed.findAll").getResultList();
@@ -342,10 +295,9 @@ public class ERSQuery {
         getEm().merge(orgjed);
         getEm().getTransaction().commit();
     }
-    ///////////////////////
-    ///// radnik //////////
-    ///////////////////////
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="RADNIK">
     public static synchronized Radnik radnikID(long ID) {
         try {
             return (Radnik) getEm().createNamedQuery("Radnik.findByIDRadnik")
@@ -505,6 +457,61 @@ public class ERSQuery {
             return getEm().createNamedQuery("Radnik.RadniciOrgJedZaDatum")
                     .setParameter("Orgjed", orgjed)
                     .setParameter("Datum", datum)
+                    .getResultList();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static synchronized List<Radnik> sviRadnici() {
+        try {
+            return getEm().createNamedQuery("Radnik.findAll")
+                    .getResultList();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static synchronized List<Radnik> PretragaSvihRadnikaDelimicanNaziv(String Naziv) {
+        try {
+            return getEm().createNamedQuery("Radnik.DelimicanNaziv")
+                    .setParameter("Naziv", "%" + Naziv + "%")
+                    .getResultList();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static synchronized List<Radnik> PretragaRadnika(
+            String radnik, boolean samoRadnici, boolean ostaliOstaliNalozi, boolean samoAktivni, boolean samoNeaktivni) {
+        try {
+            return getEm().createNamedQuery("Radnik.PretragaRadnika")
+                    .setParameter("Naziv", "%" + radnik + "%")
+                    .setParameter("SamoAktivni", samoAktivni)
+                    .setParameter("Neaktivni", samoNeaktivni)
+                    .setParameter("SamoRadnici", samoRadnici)
+                    .setParameter("SamoOstaliNalozi", ostaliOstaliNalozi)
+                    .getResultList();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static synchronized List<Radnik> SviAktivniRadniciFirme(String radnik) {
+        try {
+            return getEm().createNamedQuery("Radnik.SviAktivniRadnici")
+                    .setParameter("Naziv", "%" + radnik + "%")
+                    .getResultList();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static synchronized List<Radnik> AktivneFirmeAktivniRadnici(boolean AktivneFirme, boolean AktivniRadnici) {
+        try {
+            return getEm().createNamedQuery("Radnik.AktivniRadniciAktivneFirme")
+                    .setParameter("AktivneFirme", AktivneFirme)
+                    .setParameter("AktivniRadnici", AktivniRadnici)
                     .getResultList();
         } catch (Exception ex) {
             return null;
@@ -695,10 +702,9 @@ public class ERSQuery {
             return null;
         }
     }
+//</editor-fold>
 
-    ///////////////////////////////////////////
-    ///// RADDAN evidencija radnika !!! ///////
-    ///////////////////////////////////////////
+    //<editor-fold defaultstate="collapsed" desc="RADDAN">
     public static synchronized List<Raddan> evidencijeRadnikaZaDatum(Radnik radnik, String Datum) {
         try {
             return getEm().createNamedQuery("Raddan.EvidencijaRadnikaZaDatum")
@@ -754,10 +760,9 @@ public class ERSQuery {
             return null;
         }
     }
+//</editor-fold>
 
-    ///////////////////////////////////////////
-    ///// STATUSI                       ///////
-    ///////////////////////////////////////////
+    //<editor-fold defaultstate="collapsed" desc="STATUSI">
     public static synchronized List<Statusi> listaStatusa() {
         try {
             return getEm().createNamedQuery("Statusi.findAll")
@@ -786,10 +791,9 @@ public class ERSQuery {
             return null;
         }
     }
+//</editor-fold>
 
-    ///////////////////////////////////////////
-    ///// IZVEŠTAJI - Stored procedures ///////
-    ///////////////////////////////////////////
+    //<editor-fold defaultstate="collapsed" desc="IZVEŠTAJI - Stored procedures">
     public static synchronized List<SVI_RADNICI_SUMA_SATA_ZA_PERIOD> Izvestaj_SVI_RADNICI_SUMA_SATA_ZA_PERIOD(String datumOD, String datumDO) {
         SVI_RADNICI_SUMA_SATA_ZA_PERIOD srss;
         List<SVI_RADNICI_SUMA_SATA_ZA_PERIOD> lista = new ArrayList<>();
@@ -1010,10 +1014,8 @@ public class ERSQuery {
             }
         }
     }
+//</editor-fold>
 
-    //
-    // FULLKD pozivi iz ERS baze !!!
-    //
     //<editor-fold defaultstate="collapsed" desc="ERS-FullKD upiti !">
     public static synchronized List<Servis_Ukupan_Broj_Faktura_Za_Period> Izvestaj_Servis_Ukupan_Broj_Faktura_Za_Period(String DatumOD, String DatumDO) {
         Servis_Ukupan_Broj_Faktura_Za_Period sr_uk;
@@ -1201,6 +1203,7 @@ public class ERSQuery {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="EXCELL, CSV">
     public static synchronized List<TempFaktSati> tempFaktSati() throws Exception {
         return getEm().createNamedQuery("TempFaktSati.findAll")
                 .getResultList();
@@ -1272,4 +1275,75 @@ public class ERSQuery {
 
         getEm().close();
     }
+//</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="JavaFX - Fin. Izveštaj">
+    //<editor-fold defaultstate="collapsed" desc="Pomoćni metod za metod : UKDnevnaFakturisanost">
+    /**
+     * Pomoćni metod za metod -> Dnevni pregled ukupno fakturisanih sati za sve
+     * majstore !
+     *
+     * @param Godina
+     * @param Mesec
+     * @return
+     */
+    private static Number UKDnevnaFakturisanost(int Godina, int Mesec, int Dan) {
+        try {
+            Number uk = 0;
+
+            uk = ((Number) (getEm().createNamedQuery("FaktSati.UKDnevnaFakturisanost3")
+                    .setParameter("Godina", Godina)
+                    .setParameter("Mesec", Mesec)
+                    .setParameter("Dan", Dan)
+                    .getSingleResult())).intValue();
+
+            return Math.round(uk.floatValue());
+
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+    //</editor-fold>
+
+    /**
+     * Dnevni pregled ukupno fakturisanih sati za sve majstore !
+     *
+     * @param Godina
+     * @param Mesec
+     * @return
+     */
+    public static Map<Integer, Integer> UKDnevnaFakturisanost(int Godina, int Mesec) {
+        Map<Integer, Integer> fs = new TreeMap<>();
+
+        // Pazi na mesec, počinje od NULE !!!!
+        calendar.set(Godina, Mesec - 1, 1);
+        int poslednjiDanMesec = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        try {
+            for (int dan = 1; dan <= poslednjiDanMesec; dan++) {
+                fs.put(dan, (Integer) UKDnevnaFakturisanost(Godina, Mesec, dan));
+            }
+
+            return fs;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static int UKSati(int Godina, int Mesec) {
+        try {
+            float uk = 0;
+
+            uk = ((Number) (getEm().createNamedQuery("FaktSati.UKSati")
+                    .setParameter("Godina", Godina)
+                    .setParameter("Mesec", Mesec)
+                    .getSingleResult())).floatValue();
+
+            return Math.round(uk);
+
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+    //</editor-fold>
 }
