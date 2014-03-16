@@ -6,6 +6,7 @@ package ERS.queries;
 
 import ERS.Beans.FakturisaneUsluge.FUCSVBean;
 import ERS.Beans.FakturisaneUsluge.FUExcelBean;
+import ERS.BusinessBeans.DnevnoSATI_UK;
 import ent.FaktSati;
 import ent.Firma;
 import ent.Kompanija;
@@ -1291,7 +1292,7 @@ public class ERSQuery {
         try {
             Number uk = 0;
 
-            uk = ((Number) (getEm().createNamedQuery("FaktSati.UKDnevnaFakturisanost3")
+            uk = ((Number) (getEm().createNamedQuery("FaktSati.UKDnevnaFakturisanost")
                     .setParameter("Godina", Godina)
                     .setParameter("Mesec", Mesec)
                     .setParameter("Dan", Dan)
@@ -1344,6 +1345,52 @@ public class ERSQuery {
         } catch (Exception ex) {
             return 0;
         }
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Test upiti !">
+    /**
+     *
+     * ZBOG LOŠIH PERFORMASNI, PRAVE SE NOVI UPITI NALIK NA INFSISTEM UPITE !
+     *
+     * @param Godina
+     * @param Mesec
+     * @return
+     */
+    public static Map<Integer, DnevnoSATI_UK> UKDnevnaFakturisanost2(int Godina, int Mesec) {
+        Map<Integer, DnevnoSATI_UK> finalnaMapa = new TreeMap<>(DnevnoSATI_UK.getDaniMesecInitMap(Godina, Mesec));
+        List<DnevnoSATI_UK> dnevnaLista;
+
+        try {
+            dnevnaLista = getEm()
+                    .createNamedQuery("FaktSati.UKDnevnaFakturisanost")
+                    .setParameter("Godina", Godina)
+                    .setParameter("Mesec", Mesec)
+                    .getResultList();
+
+            for (DnevnoSATI_UK d : dnevnaLista) {
+                finalnaMapa.put((int) d.getDay(), d);
+            }
+
+            return finalnaMapa;
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static List<Map<Integer, Integer>> Mesec_DnevnoSATI_UK_Serije(int Godina, int Mesec) {
+        List<Map<Integer, Integer>> serija = new ArrayList<>(1);
+        Map<Integer, Integer> s = new TreeMap<>();
+
+        for (Map.Entry<Integer, DnevnoSATI_UK> e : UKDnevnaFakturisanost2(Godina, Mesec).entrySet()) {
+            // e.getKey() -> Dan ! (int) e.getValue() -> Rad i Materijal RESPEKTIVNO !!
+            s.put(e.getKey(), (int) e.getValue().getRad());
+        }
+
+        serija.add(s);
+
+        return serija;
     }
     //</editor-fold>
 }
