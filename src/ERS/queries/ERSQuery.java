@@ -1279,85 +1279,25 @@ public class ERSQuery {
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="JavaFX - Fin. Izveštaj">
-    //<editor-fold defaultstate="collapsed" desc="Pomoćni metod za metod : UKDnevnaFakturisanost">
-    /**
-     * Pomoćni metod za metod -> Dnevni pregled ukupno fakturisanih sati za sve
-     * majstore !
-     *
-     * @param Godina
-     * @param Mesec
-     * @return
-     */
-    private static Number UKDnevnaFakturisanost(int Godina, int Mesec, int Dan) {
+    public static Integer UKSati(int Godina, int Mesec) {
         try {
-            Number uk = 0;
-
-            uk = ((Number) (getEm().createNamedQuery("FaktSati.UKDnevnaFakturisanost")
+            return Math.round(
+                    ((Number) em.createNamedQuery("FaktSati.UKSati")
                     .setParameter("Godina", Godina)
                     .setParameter("Mesec", Mesec)
-                    .setParameter("Dan", Dan)
-                    .getSingleResult())).intValue();
-
-            return Math.round(uk.floatValue());
-
-        } catch (Exception ex) {
+                    .getSingleResult()).floatValue());
+        } catch (Exception e) {
             return 0;
         }
     }
-    //</editor-fold>
 
     /**
-     * Dnevni pregled ukupno fakturisanih sati za sve majstore !
-     *
      * @param Godina
      * @param Mesec
-     * @return
+     * @return Map<Integer, DnevnoSATI_UK>
+     * Svi Dani u Mesecu -> DnevnoSATI_UK
      */
-    public static Map<Integer, Integer> UKDnevnaFakturisanost(int Godina, int Mesec) {
-        Map<Integer, Integer> fs = new TreeMap<>();
-
-        // Pazi na mesec, počinje od NULE !!!!
-        calendar.set(Godina, Mesec - 1, 1);
-        int poslednjiDanMesec = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-        try {
-            for (int dan = 1; dan <= poslednjiDanMesec; dan++) {
-                fs.put(dan, (Integer) UKDnevnaFakturisanost(Godina, Mesec, dan));
-            }
-
-            return fs;
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static int UKSati(int Godina, int Mesec) {
-        try {
-            float uk = 0;
-
-            uk = ((Number) (getEm().createNamedQuery("FaktSati.UKSati")
-                    .setParameter("Godina", Godina)
-                    .setParameter("Mesec", Mesec)
-                    .getSingleResult())).floatValue();
-
-            return Math.round(uk);
-
-        } catch (Exception ex) {
-            return 0;
-        }
-    }
-    //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="Test upiti !">
-    /**
-     *
-     * ZBOG LOŠIH PERFORMASNI, PRAVE SE NOVI UPITI NALIK NA INFSISTEM UPITE !
-     *
-     * @param Godina
-     * @param Mesec
-     * @return
-     */
-    public static Map<Integer, DnevnoSATI_UK> UKDnevnaFakturisanost2(int Godina, int Mesec) {
+    public static Map<Integer, DnevnoSATI_UK> UKDnevnaFakturisanostDS(int Godina, int Mesec) {
         Map<Integer, DnevnoSATI_UK> finalnaMapa = new TreeMap<>(DnevnoSATI_UK.getDaniMesecInitMap(Godina, Mesec));
         List<DnevnoSATI_UK> dnevnaLista;
 
@@ -1379,18 +1319,35 @@ public class ERSQuery {
         }
     }
 
+    /**
+     * @param Godina
+     * @param Mesec
+     * @return Map<Integer, Integer>
+     * Svi Dani u Mesecu -> UkSati
+     */
+    public static Map<Integer, Integer> UKDnevnaFakturisanost(int Godina, int Mesec) {
+        Map<Integer, Integer> fs = new TreeMap<>();
+
+        for (Map.Entry<Integer, DnevnoSATI_UK> e : UKDnevnaFakturisanostDS(Godina, Mesec).entrySet()) {
+            fs.put(e.getKey(), Math.round((float) e.getValue().getRad()));
+        }
+
+        return fs;
+    }
+
     public static List<Map<Integer, Integer>> Mesec_DnevnoSATI_UK_Serije(int Godina, int Mesec) {
         List<Map<Integer, Integer>> serija = new ArrayList<>(1);
         Map<Integer, Integer> s = new TreeMap<>();
 
-        for (Map.Entry<Integer, DnevnoSATI_UK> e : UKDnevnaFakturisanost2(Godina, Mesec).entrySet()) {
+        for (Map.Entry<Integer, DnevnoSATI_UK> e : UKDnevnaFakturisanostDS(Godina, Mesec).entrySet()) {
             // e.getKey() -> Dan ! (int) e.getValue() -> Rad i Materijal RESPEKTIVNO !!
-            s.put(e.getKey(), (int) e.getValue().getRad());
+            s.put(e.getKey(), Math.round((float) e.getValue().getRad()));
         }
 
         serija.add(s);
 
         return serija;
     }
+
     //</editor-fold>
 }

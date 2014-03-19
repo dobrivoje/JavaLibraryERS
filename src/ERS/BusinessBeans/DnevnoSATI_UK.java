@@ -21,7 +21,6 @@ public class DnevnoSATI_UK extends Base4BusinessBeans {
     //<editor-fold defaultstate="collapsed" desc="konstruktor, getters/setters">
     public DnevnoSATI_UK(int Godina, int Mesec, int Dan, double Rad) {
         super(Godina, Mesec, Dan);
-
         this.Rad = Rad;
     }
 

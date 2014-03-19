@@ -25,15 +25,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     // JavaFX - Upiti !!!
+    // Querz ispod me je zezao 7 dana, zato što sam umesto 'datum'
+    // stavio 'Datum' !!!!
     @NamedQuery(name = "FaktSati.UKDnevnaFakturisanost",
             query = "SELECT NEW ERS.BusinessBeans.DnevnoSATI_UK("
-            + "FUNCTION('YEAR',f.Datum), FUNCTION('MONTH',f.Datum), FUNCTION('DAY',f.Datum), SUM(f.sati) "
+            + "FUNCTION('YEAR',f.datum), FUNCTION('MONTH',f.datum), FUNCTION('DAY',f.datum), SUM(f.sati) "
             + ") "
             + "FROM FaktSati f "
             + "WHERE FUNCTION('YEAR',f.datum) = :Godina AND FUNCTION('MONTH',f.datum) = :Mesec "
             // + "AND FUNCTION('DAY', f.datum) = :Dan   "
-            // + "GROUP BY FUNCTION('YEAR',f.Datum), FUNCTION('MONTH',f.Datum), FUNCTION('DAY',f.Datum)"),
-            + " GROUP BY FUNCTION('YEAR',f.datum), FUNCTION('MONTH',f.datum)"
+            + "GROUP BY FUNCTION('YEAR',f.datum), FUNCTION('MONTH',f.datum), FUNCTION('DAY',f.datum)"
+            // + " GROUP BY FUNCTION('YEAR',f.datum), FUNCTION('MONTH',f.datum)"
     ),
 
     @NamedQuery(name = "FaktSati.UKSati",
