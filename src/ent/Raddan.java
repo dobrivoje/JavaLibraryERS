@@ -5,6 +5,8 @@
 package ent;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -244,10 +246,34 @@ public class Raddan implements Serializable {
     public String toString() {
         return "[" + fKIDRadnik.getIme() + " " + fKIDRadnik.getPrezime() + " ] "
                 + "[" + datum + " ] "
-                + (getFKIDStatus().getUnosNaloga() ? "[" + nalog + " ] " : "")
                 + "[" + pocStanja + " - " + krajStanja + " ] "
                 + "[" + trajanje + " ] "
                 + "[" + fKIDStatus.getStatus() + "-" + fKIDStatus.getZnacenje() + " ] ";
 
+    }
+
+    public Long getStartTimeInSec() {
+        if (this.getTrajanje() != null) {
+            try {
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(getDatum() + " " + getPocStanja()).getTime();
+            } catch (ParseException ex) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+    }
+
+    public Long getEndTimeInSec() {
+        if (this.getTrajanje() != null) {
+            try {
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(getDatum() + " " + getKrajStanja()).getTime();
+            } catch (ParseException ex) {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }
