@@ -50,8 +50,6 @@ public class ERSQuery {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("JavaLibraryEntitiesPU");
     private static final EntityManager em = emf.createEntityManager();
 
-    private static final Calendar calendar = Calendar.getInstance();
-
     /**
      *
      * EntityManager - getEm() : pošto vraća exception, može se iskoristiti za
@@ -1276,7 +1274,7 @@ public class ERSQuery {
 
         getEm().close();
     }
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="JavaFX - Fin. Izveštaj">
     public static Integer UKSati(int Godina, int Mesec) {
