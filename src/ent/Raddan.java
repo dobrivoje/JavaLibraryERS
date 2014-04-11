@@ -29,7 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Raddan.findAll", query = "SELECT r FROM Raddan r"),
-    @NamedQuery(name = "Raddan.EvidencijaRadnikaZaDatum", query = "SELECT r FROM Raddan r WHERE r.fKIDRadnik = :Radnik AND r.datum = :Datum ORDER BY r.datum ASC, r.rbrstanja ASC"),
+    @NamedQuery(name = "Raddan.EvidencijaRadnikaZaDatum",
+            query = "SELECT r FROM Raddan r WHERE r.fKIDRadnik = :Radnik AND r.datum = :Datum ORDER BY r.datum ASC, r.rbrstanja ASC"),
     @NamedQuery(name = "Raddan.EvidencijaSvihRadnikaOrgJedZaDatum", query = "SELECT r FROM Raddan r WHERE r.fKIDRadnik.fKIDOrgjed = :Orgjed AND  r.datum = :Datum ORDER BY r.datum ASC, r.rbrstanja ASC"),
     @NamedQuery(name = "Raddan.EvidencijaSvihRadnikaFirmeZaDatum", query = "SELECT r FROM Raddan r WHERE r.fKIDRadnik.fKIDOrgjed.fKIDFirma = :Firma AND r.datum = :Datum ORDER BY r.fKIDRadnik.iDRadnik ASC, r.rbrstanja ASC"),
     @NamedQuery(name = "Raddan.IDRadnikOpsegDatuma", query = "SELECT r FROM Raddan r WHERE r.fKIDRadnik.iDRadnik = :IDRadnik AND r.datum BETWEEN :DatumOd AND :DatumDo ORDER BY r.datum ASC, r.rbrstanja ASC"),
@@ -243,12 +244,13 @@ public class Raddan implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "[" + fKIDRadnik.getIme() + " " + fKIDRadnik.getPrezime() + " ] "
-                + "[" + datum + " ] "
-                + "[" + pocStanja + " - " + krajStanja + " ] "
-                + "[" + trajanje + " ] "
-                + "[" + fKIDStatus.getStatus() + "-" + fKIDStatus.getZnacenje() + " ] ";
+    public synchronized String toString() {
+        return "[" + fKIDRadnik.getIme() + " " + fKIDRadnik.getPrezime() + "] "
+                + "[" + datum + "] "
+                + "[" + rbrstanja + "] "
+                + "[" + pocStanja + " - " + krajStanja + "] "
+                + "[" + trajanje + "] "
+                + "[" + fKIDStatus.getStatus() + "-" + fKIDStatus.getZnacenje() + "] ";
 
     }
 
@@ -272,6 +274,14 @@ public class Raddan implements Serializable {
             } catch (ParseException ex) {
                 return null;
             }
+        } else {
+            return null;
+        }
+    }
+
+    public String getRadnikKategorija(Radnik radnik, String Datum) {
+        if (this.getTrajanje() != null) {
+            return fKIDRadnik.toString() + " " + getDatum();
         } else {
             return null;
         }

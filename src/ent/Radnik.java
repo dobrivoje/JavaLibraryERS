@@ -157,6 +157,10 @@ public class Radnik implements Serializable {
         this.prezime = prezime;
     }
 
+    public String getImePrezime() {
+        return ime + " " + prezime;
+    }
+
     public Double getKoeficijent() {
         return koeficijent;
     }
