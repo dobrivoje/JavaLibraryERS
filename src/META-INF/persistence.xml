@@ -12,6 +12,7 @@
     <class>ent.TipRadnika</class>
     <class>ent.TempFaktSati2</class>
     <class>ent.TempFaktSati</class>
+    <class>ent.SystemTimeMonitoring</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:jtds:sqlserver://sqlserver1.ers.localnet:1433/ERS; loginTimeout=5; socketTimeout=5"/>
       <property name="javax.persistence.jdbc.password" value="821!!!"/>

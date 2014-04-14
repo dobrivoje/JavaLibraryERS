@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Statusi.findByStatus", query = "SELECT s FROM Statusi s WHERE s.status = :status"),
     @NamedQuery(name = "Statusi.findByZnacenje", query = "SELECT s FROM Statusi s WHERE s.znacenje = :znacenje"),
     @NamedQuery(name = "Statusi.findByBoja", query = "SELECT s FROM Statusi s WHERE s.boja = :boja"),
+    @NamedQuery(name = "Statusi.bojaHexVrednost", query = "SELECT s.colorhex FROM Statusi s WHERE s.iDStatus = :IDStatusa"),
     @NamedQuery(name = "Statusi.findByOznaka", query = "SELECT s FROM Statusi s WHERE s.oznaka = :oznaka"),
     @NamedQuery(name = "Statusi.findByNapomena", query = "SELECT s FROM Statusi s WHERE s.napomena = :napomena"),
     @NamedQuery(name = "Statusi.findByUnosNaloga", query = "SELECT s FROM Statusi s WHERE s.unosNaloga = :unosNaloga")})
@@ -57,6 +58,8 @@ public class Statusi implements Serializable {
     private Short blue;
     @Column(name = "oznaka")
     private Integer oznaka;
+    @Column(name = "ColorHex")
+    private String colorhex;
     @Column(name = "Napomena")
     private String napomena;
     @Column(name = "unos_naloga")
@@ -137,6 +140,14 @@ public class Statusi implements Serializable {
 
     public void setOznaka(Integer oznaka) {
         this.oznaka = oznaka;
+    }
+
+    public String getColorhex() {
+        return colorhex;
+    }
+
+    public void setColorhex(String colorhex) {
+        this.colorhex = colorhex;
     }
 
     public String getNapomena() {

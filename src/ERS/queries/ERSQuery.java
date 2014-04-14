@@ -7,6 +7,7 @@ package ERS.queries;
 import ERS.Beans.FakturisaneUsluge.FUCSVBean;
 import ERS.Beans.FakturisaneUsluge.FUExcelBean;
 import ERS.BusinessBeans.DnevnoSATI_UK;
+import ERS.TimeLine.SBCWorkerTimeLine;
 import ent.FaktSati;
 import ent.Firma;
 import ent.Kompanija;
@@ -14,6 +15,7 @@ import ent.Orgjed;
 import ent.Raddan;
 import ent.Radnik;
 import ent.Statusi;
+import ent.SystemTimeMonitoring;
 import ent.TempFaktSati;
 import ent.TipRadnika;
 import java.sql.CallableStatement;
@@ -48,6 +50,8 @@ public class ERSQuery {
 
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("JavaLibraryEntitiesPU");
     private static final EntityManager em = emf.createEntityManager();
+
+    public static final Statusi NON_WORKING_ACTIVITIES = ERSQuery.statusPoID(15);
 
     /**
      *
@@ -789,7 +793,40 @@ public class ERSQuery {
             return null;
         }
     }
-//</editor-fold>
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="HexColor">
+    public static String getColorHex(int IDStatus) {
+        try {
+            return (String) getEm().createNamedQuery("Statusi.bojaHexVrednost")
+                    .setParameter("IDStatusa", IDStatus)
+                    .getSingleResult();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="System Time Monitoring">
+    public static SystemTimeMonitoring getActiveTimeScheme() {
+        try {
+            return (SystemTimeMonitoring) getEm().createNamedQuery("SystemTimeMonitoring.ActiveTimeScheme")
+                    .getSingleResult();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static SystemTimeMonitoring getSTM(int IDTime) {
+        try {
+            return (SystemTimeMonitoring) getEm().createNamedQuery("SystemTimeMonitoring.findByIDTime")
+                    .setParameter("IDTime", IDTime)
+                    .getSingleResult();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="IZVEŠTAJI - Stored procedures">
     public static synchronized List<SVI_RADNICI_SUMA_SATA_ZA_PERIOD> Izvestaj_SVI_RADNICI_SUMA_SATA_ZA_PERIOD(String datumOD, String datumDO) {
@@ -1345,6 +1382,72 @@ public class ERSQuery {
 
         return serija;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="JavaFX - TimeLine za Radnika">
+    public static Map<Integer, SBCWorkerTimeLine> workerTimeLine(Radnik radnik, String datum) throws Exception {
+        Map<Integer, SBCWorkerTimeLine> TL = new TreeMap<>();
+        SBCWorkerTimeLine SB;
+        SBCWorkerTimeLine SB_do_prvog_kucanja;
+
+        List<Raddan> RD = ERSQuery.evidencijeRadnikaZaDatum(radnik, datum);
+
+        if (!RD.isEmpty()) {
+            for (Raddan r1 : RD) {
+                SB = new SBCWorkerTimeLine(
+                        radnik,
+                        r1.getFKIDStatus(),
+                        r1.getNalog(),
+                        datum,
+                        r1.getPocStanja(),
+                        r1.getKrajStanja(),
+                        r1.getTrajanje()
+                );
+
+                TL.put(r1.getRbrstanja(), SB);
+
+                if (r1.getRbrstanja() == 1) {
+                    SB_do_prvog_kucanja = new SBCWorkerTimeLine(
+                            radnik,
+                            SBCWorkerTimeLine.NON_WORKING_ACTIVITIES,
+                            null,
+                            datum,
+                            SBCWorkerTimeLine.MIN_SYSTEM_TIME,
+                            r1.getPocStanja(), //... prvo kucanje radnika !!!
+                            (float) SBCWorkerTimeLine.timeDifferenceInMinutes(
+                                    SBCWorkerTimeLine.MIN_SYSTEM_TIME, r1.getPocStanja())
+                    );
+
+                    TL.put(0, SB_do_prvog_kucanja);
+                }
+            }
+
+            // Ako nema ni jednog zapisa za radnika za taj datum
+        } else {
+            SB = new SBCWorkerTimeLine(
+                    radnik,
+                    SBCWorkerTimeLine.NON_WORKING_ACTIVITIES,
+                    null,
+                    datum,
+                    SBCWorkerTimeLine.MIN_SYSTEM_TIME,
+                    SBCWorkerTimeLine.MAX_SYSTEM_TIME,
+                    16f
+            );
+
+            TL.put(1, SB);
+        }
+
+        return TL;
+    }
+
+    public static List<Map<Integer, SBCWorkerTimeLine>> allWorkersTimeLine(Firma Firma, String datum) throws Exception {
+        List<Map<Integer, SBCWorkerTimeLine>> listaRadnika = new ArrayList();
+
+        for (Radnik aktivanRadnik : aktivniRadniciFirme(Firma)) {
+            listaRadnika.add(workerTimeLine(aktivanRadnik, datum));
+        }
+
+        return listaRadnika;
+    }
     //</editor-fold>
 }
