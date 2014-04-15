@@ -26,7 +26,7 @@ public class SBCWorkerTimeLine {
     public static final String MAX_SYSTEM_TIME = ERSQuery.getActiveTimeScheme().getSystemTimeMax();
 
     // Definicija markera za kraj
-    public static final Statusi NON_WORKING_ACTIVITIES = ERSQuery.NON_WORKING_ACTIVITIES;
+    public static final Statusi NON_WORKING_PERIOD = ERSQuery.NE_NADGLEDANA_AKTIVNOST;
 
     private final Radnik radnik;
     private final Statusi status;

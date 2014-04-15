@@ -7,6 +7,9 @@ package ERS.queries;
 import ERS.Beans.FakturisaneUsluge.FUCSVBean;
 import ERS.Beans.FakturisaneUsluge.FUExcelBean;
 import ERS.BusinessBeans.DnevnoSATI_UK;
+import ERS.TimeLine.Functionalities.ITimeLineCategory;
+import ERS.TimeLine.Functionalities.ITimeLineDuration;
+import ERS.TimeLine.Functionalities.ITimeLineObservableUnit;
 import ERS.TimeLine.SBCWorkerTimeLine;
 import ent.FaktSati;
 import ent.Firma;
@@ -51,7 +54,10 @@ public class ERSQuery {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("JavaLibraryEntitiesPU");
     private static final EntityManager em = emf.createEntityManager();
 
-    public static final Statusi NON_WORKING_ACTIVITIES = ERSQuery.statusPoID(15);
+    // NE_NADGLEDANA_AKTIVNOST - Vreme pre početka i posle kraja praćenja vremena na TimeLine-u 
+    // definisanom u tabeli SystemTimeMonitoring
+    public static final Statusi NE_NADGLEDANA_AKTIVNOST = ERSQuery.statusPoID(15);
+    public static final Firma PODRAZUMEVANA_FIRMA = ERSQuery.PodrazumevanaFirma();
 
     /**
      *
@@ -63,10 +69,7 @@ public class ERSQuery {
      * @throws java.net.UnknownHostException
      * @throws java.sql.SQLException
      */
-    public static synchronized EntityManager getEm()
-            throws NullPointerException, Exception,
-            java.net.UnknownHostException, java.sql.SQLException {
-
+    public static synchronized EntityManager getEm() throws NullPointerException, Exception, java.net.UnknownHostException, java.sql.SQLException {
         return em;
     }
 
@@ -122,7 +125,7 @@ public class ERSQuery {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="FIRMA">
-    public static synchronized List<Firma> listaSvihFirmi() {
+    public static List<Firma> listaSvihFirmi() {
         try {
             return getEm().createNamedQuery("Firma.findAll").getResultList();
         } catch (Exception ex) {
@@ -130,7 +133,7 @@ public class ERSQuery {
         }
     }
 
-    public static synchronized List<Firma> firmeKompanije(Kompanija k) {
+    public static List<Firma> firmeKompanije(Kompanija k) {
         try {
             return getEm().createNamedQuery("Firma.FirmeKompanije")
                     .setParameter("Kompanija", k)
@@ -140,7 +143,7 @@ public class ERSQuery {
         }
     }
 
-    public static synchronized List<Firma> firmeKompanijeIDK(int IDK) {
+    public static List<Firma> firmeKompanijeIDK(int IDK) {
         try {
             return getEm().createNamedQuery("Firma.FirmeKompanijeID")
                     .setParameter("KompanijaID", IDK)
@@ -150,7 +153,7 @@ public class ERSQuery {
         }
     }
 
-    public static synchronized Firma FirmaID(int ID) {
+    public static Firma FirmaID(int ID) {
         try {
             return (Firma) getEm().createNamedQuery("Firma.findByIDFirma")
                     .setParameter("iDFirma", ID)
@@ -160,8 +163,29 @@ public class ERSQuery {
         }
     }
 
-    // Ukoliko SQL server nije dostupan, treba izbaciti izuetak, da bi se podigla apliakcija !
-    public static synchronized List<Firma> AktivneFirme(boolean Aktivna) {
+    /**
+     * Podrazumevana Firma - Ako imamo više aktivnih firmi kompanije firma koja
+     * je podrazumevana se prikazuje npr. na TimeLine-u,..
+     *
+     * @return Firma
+     */
+    public static Firma PodrazumevanaFirma() {
+        try {
+            return (Firma) getEm().createNamedQuery("Firma.Podrazumevana")
+                    .getSingleResult();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Ukoliko SQL server nije dostupan, treba izbaciti izuetak, da bi se
+     * podigla apliakcija !
+     *
+     * @param Aktivna
+     * @return
+     */
+    public static List<Firma> AktivneFirme(boolean Aktivna) {
         try {
             return getEm().createNamedQuery("Firma.AktivneFirme")
                     .setParameter("Aktivna", Aktivna)
@@ -1409,7 +1433,7 @@ public class ERSQuery {
                 if (r1.getRbrstanja() == 1) {
                     SB_do_prvog_kucanja = new SBCWorkerTimeLine(
                             radnik,
-                            SBCWorkerTimeLine.NON_WORKING_ACTIVITIES,
+                            SBCWorkerTimeLine.NON_WORKING_PERIOD,
                             null,
                             datum,
                             SBCWorkerTimeLine.MIN_SYSTEM_TIME,
@@ -1426,7 +1450,7 @@ public class ERSQuery {
         } else {
             SB = new SBCWorkerTimeLine(
                     radnik,
-                    SBCWorkerTimeLine.NON_WORKING_ACTIVITIES,
+                    SBCWorkerTimeLine.NON_WORKING_PERIOD,
                     null,
                     datum,
                     SBCWorkerTimeLine.MIN_SYSTEM_TIME,
@@ -1440,14 +1464,41 @@ public class ERSQuery {
         return TL;
     }
 
-    public static List<Map<Integer, SBCWorkerTimeLine>> allWorkersTimeLine(Firma Firma, String datum) throws Exception {
+    /**
+     * allWorkersTimeLine - Generisanje numeričkih podataka o evidencijama za
+     * sve aktivne radnike firme
+     *
+     * Rezultat je lista mapa <Integer, SBCWorkerTimeLine> gde je Integer redni
+     * broj a SBCWorkerTimeLine, podatak o konkretnoj evidenciji radnika
+     *
+     * @param Firma
+     * @param Datum
+     * @return List<Map<Integer, SBCWorkerTimeLine>>
+     * @throws Exception
+     */
+    public static List<Map<Integer, SBCWorkerTimeLine>> allWorkersTimeLine(Firma Firma, String Datum) throws Exception {
+
         List<Map<Integer, SBCWorkerTimeLine>> listaRadnika = new ArrayList();
 
-        for (Radnik aktivanRadnik : aktivniRadniciFirme(Firma)) {
-            listaRadnika.add(workerTimeLine(aktivanRadnik, datum));
+        for (Radnik radnik : radniciFirmeZaDatum(Firma, Datum)) {
+            listaRadnika.add(workerTimeLine(radnik, Datum));
         }
 
         return listaRadnika;
+    }
+
+    /**
+     * AllCategoresEvents - Za sve kategorije (npr. kategorija može biti
+     * Radnik), generišemo sve statuse sa trajanjima svakog statusa za
+     * kategoriju.
+     *
+     * @param Firma
+     * @param Datum
+     * @return
+     * @throws Exception
+     */
+    public static Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> AllCategoresEvents(ITimeLineObservableUnit Firma, String Datum) throws Exception {
+        return null;
     }
     //</editor-fold>
 }

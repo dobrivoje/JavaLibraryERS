@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Firma.findByAdresa", query = "SELECT f FROM Firma f WHERE f.adresa = :adresa"),
     @NamedQuery(name = "Firma.findByPostanskiBroj", query = "SELECT f FROM Firma f WHERE f.postanskiBroj = :postanskiBroj"),
     @NamedQuery(name = "Firma.findByPib", query = "SELECT f FROM Firma f WHERE f.pib = :pib"),
+    @NamedQuery(name = "Firma.Podrazumevana", query = "SELECT f FROM Firma f WHERE f.podrazumevana = TRUE"),
     @NamedQuery(name = "Firma.findByMatbr", query = "SELECT f FROM Firma f WHERE f.matbr = :matbr")})
 public class Firma implements Serializable {
 
@@ -54,9 +55,6 @@ public class Firma implements Serializable {
     @Basic(optional = false)
     @Column(name = "Grad")
     private String grad;
-    @Basic(optional = false)
-    @Column(name = "Aktivna")
-    private boolean aktivna;
     @Column(name = "Kod")
     private String kod;
     @Column(name = "Adresa")
@@ -73,6 +71,14 @@ public class Firma implements Serializable {
     @JoinColumn(name = "FK_IDK", referencedColumnName = "IDK")
     @ManyToOne(optional = false)
     private Kompanija fkIdk;
+
+    @Basic(optional = false)
+    @Column(name = "Aktivna")
+    private boolean aktivna;
+
+    @Basic(optional = false)
+    @Column(name = "Podrazumevana")
+    private boolean podrazumevana;
 
     public Firma() {
     }
@@ -159,6 +165,14 @@ public class Firma implements Serializable {
         this.fkIdk = fkIdk;
     }
 
+    public String getKod() {
+        return kod;
+    }
+
+    public void setKod(String kod) {
+        this.kod = kod;
+    }
+
     public boolean isAktivna() {
         return aktivna;
     }
@@ -167,12 +181,12 @@ public class Firma implements Serializable {
         this.aktivna = aktivna;
     }
 
-    public String getKod() {
-        return kod;
+    public boolean isPodrazumevana() {
+        return aktivna;
     }
 
-    public void setKod(String kod) {
-        this.kod = kod;
+    public void setPodrazumevana(boolean podrazumevana) {
+        this.podrazumevana = podrazumevana;
     }
 
     @Override
@@ -209,6 +223,7 @@ public class Firma implements Serializable {
                 + "Poštanski broj - " + postanskiBroj + ", "
                 + "PIB - " + pib + ", "
                 + "Matični Broj - " + matbr + ", "
-                + "Aktivna (prikaz svih org. jedinica firme ?) - " + aktivna;
+                + "Aktivna (prikaz svih org. jedinica firme ?) - " + aktivna
+                + "Podrazumevana za prikaz ? - " + podrazumevana;
     }
 }
