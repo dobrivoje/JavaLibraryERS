@@ -5,10 +5,13 @@
  */
 package ERS.TimeLine.Functionalities;
 
+import java.util.List;
+
 /**
  *
  * @author dobri
  */
 public interface ITimeLineObservableUnit {
 
+    public List<ITimeLineCategory> getCategories();
 }

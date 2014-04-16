@@ -31,6 +31,7 @@ public class SBCWorkerTimeLine {
     private final Radnik radnik;
     private final Statusi status;
     private String nalog;
+
     private final String datum;
     private final String vremePocetka;
     private final String vremeKraja;

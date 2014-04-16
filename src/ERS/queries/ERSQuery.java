@@ -7,6 +7,8 @@ package ERS.queries;
 import ERS.Beans.FakturisaneUsluge.FUCSVBean;
 import ERS.Beans.FakturisaneUsluge.FUExcelBean;
 import ERS.BusinessBeans.DnevnoSATI_UK;
+import ERS.TimeLine.Functionalities.Adapters.RadnikAdapter;
+import ERS.TimeLine.Functionalities.Adapters.SBCWorkerAdapter;
 import ERS.TimeLine.Functionalities.ITimeLineCategory;
 import ERS.TimeLine.Functionalities.ITimeLineDuration;
 import ERS.TimeLine.Functionalities.ITimeLineObservableUnit;
@@ -29,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -374,10 +377,10 @@ public class ERSQuery {
         }
     }
 
-    public static synchronized List<Radnik> radniciFirme(int iDFirma) {
+    public static synchronized List<Radnik> radniciFirme(int IDFirma) {
         try {
             return getEm().createNamedQuery("Radnik.RadniciFirme")
-                    .setParameter("iDFirma", iDFirma)
+                    .setParameter("iDFirma", IDFirma)
                     .getResultList();
         } catch (Exception ex) {
             return null;
@@ -1409,7 +1412,7 @@ public class ERSQuery {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="JavaFX - TimeLine za Radnika">
-    public static Map<Integer, SBCWorkerTimeLine> workerTimeLine(Radnik radnik, String datum) throws Exception {
+    public static Map<Integer, SBCWorkerTimeLine> workerTimeLine(Radnik radnik, String datum) {
         Map<Integer, SBCWorkerTimeLine> TL = new TreeMap<>();
         SBCWorkerTimeLine SB;
         SBCWorkerTimeLine SB_do_prvog_kucanja;
@@ -1492,13 +1495,32 @@ public class ERSQuery {
      * Radnik), generišemo sve statuse sa trajanjima svakog statusa za
      * kategoriju.
      *
-     * @param Firma
+     * @param OU - ITimeLineObservableUnit - Objekat posmatranja
      * @param Datum
-     * @return
-     * @throws Exception
+     * @return Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>>
+     * 
+     * ITimeLineCategory - Kategorija za koju se pravi FX TimeLine
+     * Map<Integer, ITimeLineDuration> : Integer = Redni Broj Operacije, ITimeLineDuration = {ID Statusa, i Trajanje}
      */
-    public static Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> AllCategoresEvents(ITimeLineObservableUnit Firma, String Datum) throws Exception {
-        return null;
+    public static Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> AllCategoresEvents(ITimeLineObservableUnit OU, String Datum) {
+        Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> ACE = new HashMap<>();
+        Map<Integer, ITimeLineDuration> EvidentiraniDogadjaji;
+
+        for (ITimeLineCategory ITLC : OU.getCategories()) {
+            RadnikAdapter RTL = (RadnikAdapter) ITLC;
+            EvidentiraniDogadjaji = new TreeMap<>();
+
+            for (Map.Entry<Integer, SBCWorkerTimeLine> e : workerTimeLine(RTL.getRadnik(), Datum).entrySet()) {
+                Integer RBR_Operacije = e.getKey();
+                SBCWorkerAdapter Sbcw_Tl = new SBCWorkerAdapter(e.getValue());
+
+                EvidentiraniDogadjaji.put(RBR_Operacije, Sbcw_Tl);
+            }
+
+            ACE.put(ITLC, EvidentiraniDogadjaji);
+        }
+
+        return ACE;
     }
     //</editor-fold>
 }

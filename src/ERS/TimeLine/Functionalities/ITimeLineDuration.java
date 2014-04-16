@@ -12,4 +12,6 @@ package ERS.TimeLine.Functionalities;
 public interface ITimeLineDuration {
 
     public int getDuration();
+
+    public int getStatusID();
 }

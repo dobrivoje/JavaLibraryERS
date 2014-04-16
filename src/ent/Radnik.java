@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Radnik.radniciKompanijeZaDatum",
             query = "SELECT DISTINCT rd.fKIDRadnik FROM Raddan rd WHERE rd.fKIDRadnik.fKIDOrgjed.fKIDFirma.fkIdk = :Kompanija AND rd.datum = :Datum"),
     @NamedQuery(name = "Radnik.RadniciFirmeZaDatum",
-            query = "SELECT DISTINCT rd FROM Raddan rd WHERE rd.fKIDRadnik.fKIDOrgjed.fKIDFirma = :Firma AND rd.datum = :Datum"),
+            query = "SELECT DISTINCT rd.fKIDRadnik FROM Raddan rd WHERE rd.fKIDRadnik.fKIDOrgjed.fKIDFirma = :Firma AND rd.datum = :Datum"),
     @NamedQuery(name = "Radnik.RadniciOrgJedZaDatum",
             query = "SELECT DISTINCT rd.fKIDRadnik FROM Raddan rd WHERE  rd.fKIDRadnik.radnik = TRUE AND rd.fKIDRadnik.fKIDOrgjed = :Orgjed AND rd.datum = :Datum"),
     @NamedQuery(name = "Radnik.AktivniRadniciFirme",
