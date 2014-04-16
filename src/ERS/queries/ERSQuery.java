@@ -1497,13 +1497,14 @@ public class ERSQuery {
      *
      * @param OU - ITimeLineObservableUnit - Objekat posmatranja
      * @param Datum
-     * @return Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>>
-     * 
-     * ITimeLineCategory - Kategorija za koju se pravi FX TimeLine
-     * Map<Integer, ITimeLineDuration> : Integer = Redni Broj Operacije, ITimeLineDuration = {ID Statusa, i Trajanje}
+     * @return Map<ITimeLineCategory, Map<String, ITimeLineDuration>>
+     *
+     * String - Kategorija za koju se pravi FX TimeLine Map<Integer,
+     * ITimeLineDuration> : Integer = Redni Broj Operacije, ITimeLineDuration =
+     * {ID Statusa, i Trajanje}
      */
-    public static Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> AllCategoresEvents(ITimeLineObservableUnit OU, String Datum) {
-        Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> ACE = new HashMap<>();
+    public static Map<String, Map<Integer, ITimeLineDuration>> AllCategoresEvents(ITimeLineObservableUnit OU, String Datum) {
+        Map<String, Map<Integer, ITimeLineDuration>> ACE = new HashMap<>();
         Map<Integer, ITimeLineDuration> EvidentiraniDogadjaji;
 
         for (ITimeLineCategory ITLC : OU.getCategories()) {
@@ -1511,13 +1512,13 @@ public class ERSQuery {
             EvidentiraniDogadjaji = new TreeMap<>();
 
             for (Map.Entry<Integer, SBCWorkerTimeLine> e : workerTimeLine(RTL.getRadnik(), Datum).entrySet()) {
-                Integer RBR_Operacije = e.getKey();
-                SBCWorkerAdapter Sbcw_Tl = new SBCWorkerAdapter(e.getValue());
+                Integer RBr = e.getKey();
+                SBCWorkerAdapter SBCWAdapter = new SBCWorkerAdapter(e.getValue());
 
-                EvidentiraniDogadjaji.put(RBR_Operacije, Sbcw_Tl);
+                EvidentiraniDogadjaji.put(RBr, SBCWAdapter);
             }
 
-            ACE.put(ITLC, EvidentiraniDogadjaji);
+            ACE.put(RTL.getCategory(), EvidentiraniDogadjaji);
         }
 
         return ACE;
