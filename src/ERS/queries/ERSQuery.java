@@ -61,6 +61,9 @@ public class ERSQuery {
     // definisanom u tabeli SystemTimeMonitoring
     public static final Statusi NE_NADGLEDANA_AKTIVNOST = ERSQuery.statusPoID(15);
     public static final Firma PODRAZUMEVANA_FIRMA = ERSQuery.PodrazumevanaFirma();
+    
+    //Trajanje nadgledanja sistema u minutima !
+    public static final int SYSTEM_TIME_MONITORING_DURATION = getSystemTimeMonitoringDuration();
 
     /**
      *
@@ -853,6 +856,10 @@ public class ERSQuery {
             return null;
         }
     }
+
+    private static int getSystemTimeMonitoringDuration() {
+        return getActiveTimeScheme().getSystemTimeMonitoringDuration();
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="IZVEŠTAJI - Stored procedures">
@@ -1451,6 +1458,14 @@ public class ERSQuery {
 
             // Ako nema ni jednog zapisa za radnika za taj datum
         } else {
+            /*
+             dc.setDates(
+             datum + " " + SBCWorkerTimeLine.MIN_SYSTEM_TIME,
+             datum + " " + SBCWorkerTimeLine.MAX_SYSTEM_TIME);
+                
+             UkMinuta = dc.getTrajanjeMinuti();
+             */
+
             SB = new SBCWorkerTimeLine(
                     radnik,
                     SBCWorkerTimeLine.NON_WORKING_PERIOD,
@@ -1458,10 +1473,9 @@ public class ERSQuery {
                     datum,
                     SBCWorkerTimeLine.MIN_SYSTEM_TIME,
                     SBCWorkerTimeLine.MAX_SYSTEM_TIME,
-                    16f
-            );
+                    (float) SYSTEM_TIME_MONITORING_DURATION);
 
-            TL.put(1, SB);
+            TL.put(0, SB);
         }
 
         return TL;
@@ -1503,8 +1517,8 @@ public class ERSQuery {
      * ITimeLineDuration> : Integer = Redni Broj Operacije, ITimeLineDuration =
      * {ID Statusa, i Trajanje}
      */
-    public static Map<String, Map<Integer, ITimeLineDuration>> AllCategoresEvents(ITimeLineObservableUnit OU, String Datum) {
-        Map<String, Map<Integer, ITimeLineDuration>> ACE = new HashMap<>();
+    public static Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> AllCategoresEvents(ITimeLineObservableUnit OU, String Datum) {
+        Map<ITimeLineCategory, Map<Integer, ITimeLineDuration>> ACE = new HashMap<>();
         Map<Integer, ITimeLineDuration> EvidentiraniDogadjaji;
 
         for (ITimeLineCategory ITLC : OU.getCategories()) {
@@ -1518,7 +1532,7 @@ public class ERSQuery {
                 EvidentiraniDogadjaji.put(RBr, SBCWAdapter);
             }
 
-            ACE.put(RTL.getCategory(), EvidentiraniDogadjaji);
+            ACE.put(RTL, EvidentiraniDogadjaji);
         }
 
         return ACE;

@@ -40,6 +40,8 @@ public class SystemTimeMonitoring implements Serializable {
     private String systemTimeMin;
     @Column(name = "SystemTimeMax")
     private String systemTimeMax;
+    @Column(name = "SystemTimeMonitoringDuration")
+    private int systemTimeMonitoringDuration;
     @Column(name = "Active")
     private boolean active;
     @Column(name = "Napomena")
@@ -74,6 +76,14 @@ public class SystemTimeMonitoring implements Serializable {
 
     public void setSystemTimeMax(String systemTimeMax) {
         this.systemTimeMax = systemTimeMax;
+    }
+
+    public int getSystemTimeMonitoringDuration() {
+        return systemTimeMonitoringDuration;
+    }
+
+    public void setSystemTimeMonitoringDuration(int systemTimeMonitoringDuration) {
+        this.systemTimeMonitoringDuration = systemTimeMonitoringDuration;
     }
 
     public boolean isActive() {
