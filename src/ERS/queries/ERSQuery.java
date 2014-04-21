@@ -29,7 +29,6 @@ import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +38,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.RollbackException;
+import org.dobrivoje.calendarutilities.DobriKalendar;
 import sp.izvestaji.SVI_RADNICI_SUMA_SATA_ZA_PERIOD;
 import sp.izvestaji.SVI_RADNICI_UK_MESECNI_SATI_ZA_SVE_STATUSE;
 import sp.izvestaji.Servis_Fakturisani_Nalozi_Po_PC;
@@ -61,7 +61,7 @@ public class ERSQuery {
     // definisanom u tabeli SystemTimeMonitoring
     public static final Statusi NE_NADGLEDANA_AKTIVNOST = ERSQuery.statusPoID(15);
     public static final Firma PODRAZUMEVANA_FIRMA = ERSQuery.PodrazumevanaFirma();
-    
+
     //Trajanje nadgledanja sistema u minutima !
     public static final int SYSTEM_TIME_MONITORING_DURATION = getSystemTimeMonitoringDuration();
 
@@ -1290,7 +1290,7 @@ public class ERSQuery {
         tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
         tf.setSati(fu.getSati());
         tf.setNalog(fu.getRadniNalog());
-        tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+        tf.setDatum(DobriKalendar.convertDate2String(fu.getDatumRacuna()));
         tf.setPCentar(null);
 
         getEm().persist(tf);
@@ -1311,7 +1311,7 @@ public class ERSQuery {
             tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
             tf.setSati(fu.getSati());
             tf.setNalog(fu.getRadniNalog());
-            tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+            tf.setDatum(DobriKalendar.convertDate2String(fu.getDatumRacuna()));
             tf.setPCentar(null);
 
             getEm().persist(tf);
@@ -1333,7 +1333,8 @@ public class ERSQuery {
                 tf.setFKIDRadnik(radnikSifraINFSISTEM(fu.getRadnik()).getIDRadnik());
                 tf.setSati(Double.parseDouble(fu.getSati()));
                 tf.setNalog(fu.getRadniNalog());
-                tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+                // tf.setDatum(new SimpleDateFormat("yyyy-MM-dd").format(fu.getDatumRacuna()));
+                tf.setDatum(fu.getDatumRacuna());
                 tf.setPCentar(null);
 
                 getEm().persist(tf);

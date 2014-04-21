@@ -9,9 +9,9 @@ import ERS.TimeLine.Functionalities.ITimeLineCategory;
 import ERS.TimeLine.Functionalities.ITimeLineObservableUnit;
 import ent.Firma;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import org.dobrivoje.calendarutilities.DobriKalendar;
 
 /**
  * Adapter za klasu koja će biti kategorija u FX objektu i koja učestvuje u
@@ -23,18 +23,14 @@ public class FirmaAdapter implements ITimeLineObservableUnit {
     private Firma firma;
     private final String datum;
 
-    private static final String DD_STR = (new SimpleDateFormat("yyyy-MM-dd")).format(new Date());
-    private static Date DANASNJI_DATUM;
-
     private List<ITimeLineCategory> categories;
 
     //<editor-fold defaultstate="collapsed" desc="Konstruktori, getters/setters">
     public FirmaAdapter(Firma Firma, String Datum) throws ParseException {
         this.datum = Datum;
         this.firma = Firma;
-        DANASNJI_DATUM = new SimpleDateFormat("yyyy-MM-dd").parse(DD_STR);
 
-        if (getDatum(this.datum).before(DANASNJI_DATUM)) {
+        if (DobriKalendar.convertString2Date(this.datum).before(new Date())) {
             this.categories = RadnikAdapter.getTLCategories(ERS.queries.ERSQuery.radniciFirmeZaDatum(firma, datum));
         } else {
             this.categories = RadnikAdapter.getTLCategories(ERS.queries.ERSQuery.aktivniRadniciFirme(firma));
@@ -58,8 +54,4 @@ public class FirmaAdapter implements ITimeLineObservableUnit {
         this.categories = categories;
     }
     //</editor-fold>
-
-    private Date getDatum(String Datum) throws ParseException {
-        return new SimpleDateFormat("yyyy-MM-dd").parse(Datum);
-    }
 }
